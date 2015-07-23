@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 func main() {
 	http.HandleFunc("/", sayHelloName)
+	http.HandleFunc("/login", login)
 	fmt.Println("Listen on :9090")
 	err := http.ListenAndServe(":9090", nil)
 	if err != nil {
@@ -26,4 +28,15 @@ func sayHelloName(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("k %s, v %s", k, strings.Join(v, ","))
 	}
 	fmt.Fprintf(w, "Hello World")
+}
+
+func login(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		t, _ := template.ParseFiles("login.gtpl")
+		t.Execute(w, nil)
+	} else {
+		r.ParseForm()
+		fmt.Println("username: ", r.Form["username"])
+		fmt.Println("password: ", r.Form["password"])
+	}
 }
